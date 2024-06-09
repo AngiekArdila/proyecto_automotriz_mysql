@@ -1,0 +1,249 @@
+
+# 1. Obtener el historial de reparaciones de un vehículo específico
+```sql
+Select v.placa, r.*
+from vehiculos as v inner join reparaciones as r on v.VehiculoID = r.VehiculoID
+where v.placa="JHK123";
+```
+-- repuesta al punto 1 
+
++--------+--------------+---------------------+------------+------------+------------+---------------------+            | placa  | ReparacionID | Fecha               | VehiculoID | EmpleadoID | CostoTotal | Descripcion         |            +--------+--------------+---------------------+------------+------------+------------+---------------------+            | JHK123 |            3 | 2023-02-10 00:00:00 |          3 |          3 |        100 | Battery replacement |            | JHK123 |            4 | 2023-04-15 00:00:00 |          3 |          4 |        150 | Transmission repair |            +--------+--------------+---------------------+------------+------------+------------+---------------------+
+
+-- 2. Calcular el costo total de todas las reparaciones realizadas por un empleado
+-- específico en un período de tiempo
+
+select e. nombre, sum(r.CostoTotal) As CostoTotal
+from reparaciones as r inner join empleados as e on r.EmpleadoID= e.EmpleadoID
+where r.fecha between '2023-02-10' and '2023-10-20' and e.nombre='John'
+Group by e.nombre;
+
++--------+------------+                                                                                                 | nombre | CostoTotal |                                                                                                 +--------+------------+                                                                                                 | John   |        250 |                                                                                                 +--------+------------+ 
+ 
+ -- 3. subconsultas  Obtener los proveedores que suministran las piezas más caras
+
+ 
+ select CONCAT(pro.nombre,' ',pro.apellido) as nombre_proveedor,p.nombre, p.precio 
+ from proveedores as pro 
+ inner join piezas as p on pro.ProveedorID=p.ProveedorID
+ Where Precio = (select MAX(Precio) From Piezas);
+ 
+
++------------------+---------+--------+                                            | nombre_proveedor | nombre  | precio |                                            +------------------+---------+--------+                                            | David Johnson    | Battery | 119.99 |                                            +------------------+---------+--------+ 
+
+
+ -- 3 Listar todos los clientes y los vehículos que poseen
+
+ 
+ select c.Nombre,c.Apellido,c.Identificacion,v.placa,v.ClienteID,v.Modelo
+ from clientes as c left join vehiculos as v on c.ClienteID=v.ClienteID;
+ 
+ +--------+-----------+----------------+--------+-----------+---------+             | Nombre | Apellido  | Identificacion | placa  | ClienteID | Modelo  |             +--------+-----------+----------------+--------+-----------+---------+             | Carlos | Garcia    |         789456 | JHK123 |         3 | Cruze   |             | Ana    | Martinez  |         321654 | LMN456 |         4 | Altima  |             | Luis   | Lopez     |         123987 | QRS789 |         5 | Civic   |             | Maria  | Gonzalez  |         654123 | TUV012 |         6 | 320i    |             | Pedro  | Hernandez |         321098 | WXY345 |         7 | C-Class |             | Sofia  | Ramirez   |         543210 | ABC678 |         8 | Elantra |             | Miguel | Torres    |         654321 | DEF901 |         9 | Sorento |             | Lucia  | Vargas    |         987654 | GHI234 |        10 | Mazda3  |             +--------+-----------+----------------+--------+-----------+---------+ 
+
+
+ -- 4 Obtener la cantidad de piezas en inventario para cada pieza
+ 
+ 
+ select i.PiezaID,p.Nombre,i.Cantidad,p.Descripcion
+  from  inventario as i inner join piezas as p on i.PiezaID=p.PiezaID;
+
++---------+--------------------+----------+----------------------+                 | PiezaID | Nombre             | Cantidad | Descripcion          |                 +---------+--------------------+----------+----------------------+                 |       3 | Battery            |      200 | Car battery          |                 |       4 | Transmission Fluid |      100 | Fluid for transmissi |                 |       5 | Wheel              |      150 | Car wheel            |                 |       6 | Engine Oil         |       50 | Oil for engine       |                 |       7 | Air Filter         |       75 | Filter for air condi |                 |       8 | Suspension Spring  |      125 | Spring for suspensio |                 |       9 | Exhaust Pipe       |      175 | Pipe for exhaust sys |                 |      10 | Fuel Pump          |      200 | Pump for fuel system |                 +---------+--------------------+----------+----------------------+ 
+  
+-- 5. Obtener las citas programadas para un día específico
+ 
+ select citas.citaID,citas.VehiculoID from citas
+ where DATE(FechaHora)='2023-06-15';
+ 
+ +--------+------------+                                                            | citaID | VehiculoID |                                                            +--------+------------+                                                            |      3 |          3 |                                                            +--------+------------+ 
+
+ -- 6. Generar una factura para un cliente específico en una fecha determinada
+
+ select CONCAT(c.Nombre,' ',c.Apellido) AS cliente_nombre, f. Fecha,f.Total
+ from clientes as c inner join facturacion as f on c.ClienteID=f.ClienteID
+ where date(f.Fecha)='2023-08-25' and (f.ClienteID=6);
+
+ +----------------+---------------------+--------+                                  | cliente_nombre | Fecha               | Total  |                                  +----------------+---------------------+--------+                                  | Maria Gonzalez | 2023-08-25 00:00:00 | 250.00 |                                  +----------------+---------------------+--------+ 
+ 
+ -- 7. Listar todas las órdenes de compra y sus detalles
+
+  select oc. OrdenID as ordenescompra ,od.*
+  from ordenes_compra as oc inner join orden_detalles as od 
+  on oc.OrdenID=od.OrdenID;
+  
+  +---------------+---------+---------+----------+--------+-----------+              | ordenescompra | OrdenID | PiezaID | Cantidad | Precio | ClienteID |              +---------------+---------+---------+----------+--------+-----------+              |             3 |       3 |       3 |        5 | 599.95 |         3 |              |             4 |       4 |       4 |        2 | 39.98  |         4 |              |             5 |       5 |       5 |        4 | 319.96 |         5 |              |             6 |       6 |       6 |        3 | 119.97 |         6 |              |             7 |       7 |       7 |        6 | 89.94  |         7 |              |             8 |       8 |       8 |        7 | 279.93 |         8 |              |             9 |       9 |       9 |        8 | 399.92 |         9 |              |            10 |      10 |      10 |        9 | 809.91 |        10 |              +---------------+---------+---------+----------+--------+-----------+
+
+
+  -- 8. Obtener el costo total de piezas utilizadas en una reparación específica
+    
+  select p.Nombre,sum(p.Precio*R.Cantidad) as costototal,r.Cantidad,r.ReparacionID
+  from piezas as p inner join reparacion_piezas as r 
+  on p.PiezaID=r.PiezaID 
+  where p.nombre='Exhaust Pipe';
+  
+
++--------------+-------------------+----------+--------------+                     | Nombre       | costototal        | Cantidad | ReparacionID |                     +--------------+-------------------+----------+--------------+                     | Exhaust Pipe | 549.8900184631348 |       11 |            9 |                     +--------------+-------------------+----------+--------------+ 
+
+
+-- 9. Obtener el inventario de piezas que necesitan ser reabastecidas (cantidad
+-- menor que un umbral)
+
+
+select p.Nombre,p.Descripcion,i.Cantidad as cantidad_existente,(250-i.cantidad) as faltantes_necesito_reabastecer
+from piezas as p inner join inventario as i 
+on p.PiezaID=i.PiezaID
+where i.cantidad<250;
+
++--------------------+----------------------+--------------------+--------------------------------+                                                                   | Nombre             | Descripcion          | cantidad_existente | faltantes_necesito_reabastecer |                                                                   +--------------------+----------------------+--------------------+--------------------------------+                                                                   | Battery            | Car battery          |                200 |                             50 |                                                                   | Transmission Fluid | Fluid for transmissi |                100 |                            150 |                                                                   | Wheel              | Car wheel            |                150 |                            100 |                                                                   | Engine Oil         | Oil for engine       |                 50 |                            200 |                                                                   | Air Filter         | Filter for air condi |                 75 |                            175 |                                                                   | Suspension Spring  | Spring for suspensio |                125 |                            125 |                                                                   | Exhaust Pipe       | Pipe for exhaust sys |                175 |                             75 |                                                                   | Fuel Pump          | Pump for fuel system |                200 |                             50 |                                                                   +--------------------+----------------------+--------------------+--------------------------------+ 
+
+
+
+-- 10. Obtener la lista de servicios más solicitados en un período específico
+
+
+Select
+s.Tipo as servicio,COUNT(c.ServicioID) as cantidad_solicitada
+From citas AS c
+Inner join servicios as s
+on c.ServicioID = s.ServicioID
+where c.FechaHora between '2023-06-15' and '2023-09-10'
+group by s.Tipo;
+
++---------------------+---------------------+                                      | servicio            | cantidad_solicitada |                                      +---------------------+---------------------+                                      | Battery Replacement |                   1 |                                      | Brake Replacement   |                   1 |                                      | Transmission Repair |                   1 |                                      +---------------------+---------------------+ 
+
+-- 11. Obtener el costo total de reparaciones para cada cliente en un período
+-- específico
+
+
+select CONCAT(c.nombre,' ',c.apellido) as nombre_cliente,sum(r.CostoTotal) as sumatoria ,v.placa
+from reparaciones as r 
+inner join vehiculos as v on r.VehiculoID=v.VehiculoID
+inner join clientes as c on v.ClienteID=c.ClienteID
+where r.Fecha between '2023-02-10' and '2023-10-30'
+GROUP BY c.ClienteID, nombre_cliente, v.placa
+ORDER BY nombre_cliente ASC;
+
++-----------------+-----------+--------+                                           | nombre_cliente  | sumatoria | placa  |                                           +-----------------+-----------+--------+                                           | Ana Martinez    |       200 | LMN456 |                                           | Carlos Garcia   |       250 | JHK123 |                                           | Luis Lopez      |       250 | QRS789 |                                           | Pedro Hernandez |       300 | WXY345 |                                           +-----------------+-----------+--------+ 
+
+-- 12. Listar los empleados con mayor cantidad de reparaciones realizadas en un
+-- período específico
+
+ 
+ select e.Nombre,e.apellido,r.fecha,r.descripcion, COUNT(e.EmpleadoID) as cantidad_dereparaciones 
+ from empleados as e inner join reparaciones as r 
+ on e.EmpleadoID=r.EmpleadoID 
+ where r.fecha between '2023-02-10' and "2024-04-15"
+ group by e.EmpleadoID, e.Nombre
+ order by cantidad_dereparaciones DESC;
+ 
++--------+-----------+---------------------+-------------------------+-------------------------+                     | Nombre | apellido  | fecha               | descripcion             | cantidad_dereparaciones |                     +--------+-----------+---------------------+-------------------------+-------------------------+                     | Anna   | Smith     | 2023-12-05 00:00:00 | Suspension repair       |                       3 |                     | Linda  | Garcia    | 2023-06-20 00:00:00 | Wheel alignment         |                       1 |                     | Laura  | Martinez  | 2023-02-10 00:00:00 | Battery replacement     |                       1 |                     | John   | Hernandez | 2023-08-25 00:00:00 | Engine repair           |                       1 |                     | Peter  | Robinson  | 2023-04-15 00:00:00 | Transmission repair     |                       1 |                     | Sandra | Lopez     | 2023-10-30 00:00:00 | Air conditioning repair |                       1 |                     +--------+-----------+---------------------+-------------------------+-------------------------+  
+
+ -- 13. Obtener las piezas más utilizadas en reparaciones durante un período
+-- específico
+
+
+SELECT p.Nombre, COUNT(rp.PiezaID) AS conteo
+FROM reparaciones AS r
+INNER JOIN reparacion_piezas AS rp ON r.ReparacionID = rp.ReparacionID
+INNER JOIN piezas AS p ON rp.PiezaID = p.PiezaID
+WHERE r.fecha BETWEEN '2023-02-10' AND '2023-08-25'
+GROUP BY p.Nombre, rp.PiezaID
+ORDER BY conteo DESC;
+
++--------------------+--------+                                                                                      | Nombre             | conteo |                                                                                      +--------------------+--------+                                                                                      | Transmission Fluid |      3 |                                                                                      | Engine Oil         |      1 |                                                                                      +--------------------+--------+
+
+
+-- 14. Calcular el promedio de costo de reparaciones por vehículo
+ 
+ select v.vehiculoID,avg(r.CostoTotal)as costopromedioreparaciones
+ from vehiculos as v inner join reparaciones as r 
+ on v.VehiculoID=r.VehiculoID
+ group by v.vehiculoID
+ order by v.vehiculoID;
+
+
++------------+---------------------------+                                                                           | vehiculoID | costopromedioreparaciones |                                                                           +------------+---------------------------+                                                                           |          3 |                       125 |                                                                           |          4 |                       200 |                                                                           |          5 |                       250 |                                                                           |          7 |                       325 |                                                                           |          9 |                       400 |                                                                           |         10 |                       450 |                                                                           +------------+---------------------------+ 
+
+
+-- 15. Obtener el inventario de piezas por proveedor
+
+
+select pi.Nombre as pieza ,sum(i.cantidad) as inventario_piezas,p.Nombre as nombre_proveedor
+from inventario as i 
+inner join piezas as pi on i.PiezaID=pi.PiezaID
+inner join proveedores as p on pi.ProveedorID=p.ProveedorID
+group by p.Nombre
+order by p.proveedorID;
+
++--------------------+-------------------+------------------+
+| pieza              | inventario_piezas | nombre_proveedor |
++--------------------+-------------------+------------------+
+| Battery            |               200 | David            |
+| Transmission Fluid |               100 | Laura            |
+| Wheel              |               150 | Daniel           |
+| Engine Oil         |                50 | Emily            |
+| Air Filter         |                75 | Matthew          |
+| Suspension Spring  |               125 | Olivia           |
+| Exhaust Pipe       |               175 | James            |
+| Fuel Pump          |               200 | Sophia           |
++--------------------+-------------------+------------------+
+
+-- 16. Listar los clientes que no han realizado reparaciones en el último año
+
+
+select v.placa,r.Fecha,CONCAT(c.Nombre,' ',c.apellido) as nombrecliente
+from reparaciones as r 
+inner join vehiculos as v on r.VehiculoID=v.VehiculoID
+inner join clientes as c on v.ClienteID=c.ClienteID
+where r.fecha not between '2023-02-10' and '2023-06-20' or r.fecha is null;
+
++--------+---------------------+-----------------+                                 | placa  | Fecha               | nombrecliente   |                                 +--------+---------------------+-----------------+                                 | QRS789 | 2023-08-25 00:00:00 | Luis Lopez      |                                 | WXY345 | 2023-10-30 00:00:00 | Pedro Hernandez |                                 | WXY345 | 2023-12-05 00:00:00 | Pedro Hernandez |                                 | DEF901 | 2024-02-10 00:00:00 | Miguel Torres   |                                 | GHI234 | 2024-04-15 00:00:00 | Lucia Vargas    |                                 +--------+---------------------+-----------------+ 
+
+
+-- 17. Obtener las ganancias totales del taller en un período específico
+
+
+
+SELECT SUM(f.Total) AS ganancias_totales
+FROM reparaciones AS r
+INNER JOIN factura_detalles AS f ON r.ReparacionID = f.ReparacionID
+WHERE r.fecha BETWEEN '2023-02-10' AND '2023-08-25';
+
++-------------------+                                                              | ganancias_totales |                                                              +-------------------+                                                              |               700 |                                                              +-------------------+
+
+
+-- 19. Obtener el listado de servicios prestados por cada empleado en un período
+-- específico
+
+select e.Nombre, e.Apellido, c.FechaHora,s.Tipo
+from empleados as e 
+inner join citas as c on e.EmpleadoId=c.EmpleadoId
+inner join servicios as s on c.ServicioID=s.ServicioID
+where month(c.FechaHora)=06;
+
+
++--------+----------+---------------------+-------------------+                    | Nombre | Apellido | FechaHora           | Tipo              |                    +--------+----------+---------------------+-------------------+                    | Laura  | Martinez | 2023-06-15 11:00:00 | Brake Replacement |                    +--------+----------+---------------------+-------------------+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
