@@ -1,4 +1,3 @@
-Aquí tienes el archivo en formato markdown, organizado y con el SQL formateado correctamente:
 
 # Consultas SQL para Gestión de Taller Mecánico
 
