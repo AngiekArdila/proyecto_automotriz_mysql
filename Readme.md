@@ -1,21 +1,20 @@
 
 # Consultas SQL para Gestión de Taller Mecánico
 
-## 1. Obtener el historial de reparaciones de un vehículo específico
-
-```sql
+1. Obtener el historial de reparaciones de un vehículo específico
+~~~mysql
 SELECT v.placa, r.*
 FROM vehiculos AS v 
 INNER JOIN reparaciones AS r ON v.VehiculoID = r.VehiculoID
 WHERE v.placa = "JHK123";
-```
-
 **Resultado:**
 
 | placa  | ReparacionID | Fecha               | VehiculoID | EmpleadoID | CostoTotal | Descripcion         |
 |--------|--------------|---------------------|------------|------------|------------|---------------------|
 | JHK123 | 3            | 2023-02-10 00:00:00 | 3          | 3          | 100        | Battery replacement |
 | JHK123 | 4            | 2023-04-15 00:00:00 | 3          | 4          | 150        | Transmission repair |
+
+~~~
 
 ## 2. Calcular el costo total de todas las reparaciones realizadas por un empleado específico en un período de tiempo
 
