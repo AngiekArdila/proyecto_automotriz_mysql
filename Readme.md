@@ -7,7 +7,6 @@ SELECT v.placa, r.*
 FROM vehiculos AS v 
 INNER JOIN reparaciones AS r ON v.VehiculoID = r.VehiculoID
 WHERE v.placa = "JHK123";
-**Resultado:**
 
 | placa  | ReparacionID | Fecha               | VehiculoID | EmpleadoID | CostoTotal | Descripcion         |
 |--------|--------------|---------------------|------------|------------|------------|---------------------|
@@ -15,6 +14,11 @@ WHERE v.placa = "JHK123";
 | JHK123 | 4            | 2023-04-15 00:00:00 | 3          | 4          | 150        | Transmission repair |
 
 ~~~
+
+
+
+
+
 
 ## 2. Calcular el costo total de todas las reparaciones realizadas por un empleado específico en un período de tiempo
 
