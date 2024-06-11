@@ -100,7 +100,7 @@ INSERT INTO Servicios (ServicioID, Tipo, Descripcion, Costo) VALUES
 
 
 INSERT INTO Inventario (InventarioID, PiezaID, Cantidad, ZonaID) VALUES 
-(3, 3, 200, 3),
+(3, 3, 10, 3),
 (4, 4, 100, 4),
 (5, 5, 150, 5),
 (6, 6, 50, 6),
@@ -108,6 +108,7 @@ INSERT INTO Inventario (InventarioID, PiezaID, Cantidad, ZonaID) VALUES
 (8, 8, 125, 8),
 (9, 9, 175, 9),
 (10, 10, 200, 10);
+ 
 
 
 INSERT INTO Piezas (PiezaID, Nombre, Descripcion, Precio, ProveedorID) VALUES 
@@ -165,6 +166,7 @@ INSERT INTO telefono_proveedor (telefono_proveedorID, Tipo, Numero) VALUES
 (10, 'Movil', '555-0008');
 
 
+
 INSERT INTO Reparaciones (ReparacionID, Fecha, VehiculoID, EmpleadoID, CostoTotal, Descripcion) VALUES 
 (3, '2023-02-10', 3, 3, 100.00, 'Battery replacement'),
 (4, '2023-04-15', 4, 4, 150.00, 'Transmission repair'),
@@ -176,14 +178,16 @@ INSERT INTO Reparaciones (ReparacionID, Fecha, VehiculoID, EmpleadoID, CostoTota
 (10, '2024-04-15', 10, 10, 450.00, 'Fuel pump replacement');
 
 
+
+
 INSERT INTO Reparacion_Piezas (ReparacionID, PiezaID, Cantidad) VALUES 
-(3, 3, 1),
-(4, 4, 1),
-(5, 5, 1),
-(6, 6, 1),
-(7, 7, 1),
-(8, 8, 1),
-(9, 9, 1),
+(3, 3, 2),
+(4, 4, 4),
+(5, 3, 5),
+(6, 6, 2),
+(7, 3, 1),
+(8, 8, 3),
+(9, 9, 8),
 (10, 10, 1);
 
 
@@ -210,7 +214,7 @@ INSERT INTO Factura_Detalles (FacturaID, ReparacionID, ClienteID, Total) VALUES
 
 
 INSERT INTO orden_detalles (OrdenID, PiezaID, Cantidad, Precio, ClienteID) VALUES 
-(3, 3, 5, '599.95', 3),
+(3, 3, 100, '599.95', 3),
 (4, 4, 2, '39.98', 4),
 (5, 5, 4, '319.96', 5),
 (6, 6, 3, '119.97', 6),
@@ -240,3 +244,4 @@ INSERT INTO Citas (CitaID, FechaHora, VehiculoID, ServicioID, EmpleadoID) VALUES
 (8, '2023-11-15 12:30:00', 8, 8, 8),
 (9, '2024-01-20 11:30:00', 9, 9, 9),
 (10, '2024-03-05 08:00:00', 10, 10, 10);
+
