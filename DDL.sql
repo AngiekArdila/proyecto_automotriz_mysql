@@ -7,7 +7,7 @@ CREATE TABLE Marcas (
 );
 
 CREATE TABLE Inventario (
-    InventarioID INT PRIMARY KEY,
+    InventarioID INT PRIMARY KEY auto_increment,
     PiezaID INT,
     Cantidad INT,
     ZonaID INT
@@ -101,11 +101,11 @@ CREATE TABLE Sedes (
 
 
 CREATE TABLE Reparaciones (
-    ReparacionID INT PRIMARY KEY,
+    ReparacionID INT PRIMARY KEY AUTO_INCREMENT,
     Fecha DATETIME,
     VehiculoID INT,
     EmpleadoID INT,
-    CostoTotal FLOAT,
+    CostoTotal DOUBLE,
     Descripcion VARCHAR(50),
     FOREIGN KEY (VehiculoID) REFERENCES Vehiculos(VehiculoID),
     FOREIGN KEY (EmpleadoID) REFERENCES Empleados(EmpleadoID)
@@ -152,7 +152,7 @@ CREATE TABLE Citas (
 );
 
 CREATE TABLE Facturacion (
-    FacturaID INT PRIMARY KEY,
+    FacturaID INT PRIMARY KEY auto_increment,
     Fecha DATETIME,
     ClienteID INT,
     Total VARCHAR(50),
