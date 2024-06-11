@@ -457,6 +457,7 @@ END $$
 DELIMITER ;
 
 CALL insertar_reparacion('2024-11-23 00:00:00', 4, 4, 400, 'Exhaust system repair');
+Query OK, 1 row affected (0.0033 sec)
 
 ## 2.Crear un procedimiento almacenado para actualizar el inventario de una pieza.
 
@@ -549,5 +550,62 @@ select * from facturacion;
 call ConsultarFacturamejorada(5,5);
  
 ## 5. Crear un procedimiento almacenado para obtener el historial de reparaciones de un vehículo 
+
+Delimiter $$ 
+
+create procedure historial_reparaciones(
+      in p_VehiculoID int
+      )
+      
+	BEGIN
+    DECLARE reparaCount INT;
+
+    SELECT COUNT(*) INTO reparaCount
+    FROM reparaciones
+    WHERE vehiculoID = p_vehiculoID; 
+    
+    
+    IF reparaCount > 0 THEN
+        SELECT * FROM reparaciones
+        WHERE VehiculoID = p_VehiculoID;
+    ELSE
+        SELECT 'El vehiculo no fue encontrada.' AS Mensaje;
+    END IF;
+END $$
+
+Delimiter ;
+
+select * from reparaciones;
+
+call historial_reparaciones(4);
+
+## 6. Crear un procedimiento almacenado para calcular el costo total de reparaciones de un cliente en un período 
+select * from clientes;
+select * from reparaciones;
+DELIMITER $$
+
+CREATE PROCEDURE CalcularCostoTotalReparaciones(
+    IN p_ClienteID INT,
+    IN p_FechaInicio DATE,
+    IN p_FechaFin DATE
+)
+BEGIN
+    DECLARE costoTotal DOUBLE;
+
+    SELECT SUM(r.CostoTotal) INTO costoTotal
+    FROM Reparaciones r
+    JOIN Vehiculos v ON r.VehiculoID = v.VehiculoID
+    WHERE v.ClienteID = p_ClienteID
+    AND r.Fecha BETWEEN p_FechaInicio AND p_FechaFin;
+
+    IF costoTotal IS NULL THEN
+        SElECT  'costoTotal fue 0';
+    END IF;
+  SELECT costoTotal AS CostoTotalReparaciones;
+END $$
+
+DELIMITER ;
+
+call CalcularCostoTotalReparaciones();
 
  
