@@ -443,6 +443,7 @@ ORDER BY p.PiezaID;
 ----------------------
 ## 1. Crear un procedimiento almacenado para insertar una nueva reparación. 
 ## 
+~~~mysql 
 DELIMITER $$
 CREATE PROCEDURE insertar_reparacion(
     IN i_Fecha DATETIME,
@@ -459,8 +460,22 @@ DELIMITER ;
 CALL insertar_reparacion('2024-11-23 00:00:00', 4, 4, 400, 'Exhaust system repair');
 Query OK, 1 row affected (0.0033 sec)
 
++--------------+---------------------+------------+------------+------------+-------------------------+
+| ReparacionID | Fecha               | VehiculoID | EmpleadoID | CostoTotal | Descripcion             |
++--------------+---------------------+------------+------------+------------+-------------------------+
+|            3 | 2023-02-10 00:00:00 |          3 |          3 |        100 | Battery replacement     |
+|            4 | 2023-04-15 00:00:00 |          4 |          4 |        150 | Transmission repair     |
+|            5 | 2023-06-20 00:00:00 |          5 |          5 |        200 | Wheel alignment         |
+|            6 | 2023-08-25 00:00:00 |          6 |          6 |        250 | Engine repair           |
+|            7 | 2023-10-30 00:00:00 |          7 |          7 |        300 | Air conditioning repair |
+|            8 | 2023-12-05 00:00:00 |          8 |          8 |        350 | Suspension repair       |
+|            9 | 2024-02-10 00:00:00 |          9 |          9 |        400 | Exhaust system repair   |
+|           10 | 2024-04-15 00:00:00 |         10 |         10 |        450 | Fuel pump replacement   |
+|           11 | 2024-11-23 00:00:00 |          4 |          4 |        400 | Exhaust system repair   |
++--------------+---------------------+------------+------------+------------+-------------------------+
+~~~
 ## 2.Crear un procedimiento almacenado para actualizar el inventario de una pieza.
-
+~~~mysql 
 DELIMITER $$
 
 CREATE PROCEDURE actualizar_inventario_pieza (
@@ -491,8 +506,9 @@ CALL actualizar_inventario_pieza(10, 90, 1);
 
 SELECT * FROM  inventario;
 
-## 3.Crear un procedimiento almacenado para eliminar una cita 
 
+## 3.Crear un procedimiento almacenado para eliminar una cita 
+~~~mysql 
 DELIMITER $$
 
 CREATE PROCEDURE eliminarcita(
@@ -501,26 +517,43 @@ CREATE PROCEDURE eliminarcita(
 )
 BEGIN 
     DECLARE conteoCount INT;
+
+   
     SELECT COUNT(*) INTO conteoCount 
     FROM citas 
     WHERE FechaHora = p_fechahora AND VehiculoID = p_VehiculoID;
 
+   
     IF conteoCount > 0 THEN
+       
         SELECT * FROM citas 
         WHERE FechaHora = p_fechahora AND VehiculoID = p_VehiculoID;
 
+        
         DELETE FROM citas
         WHERE FechaHora = p_fechahora AND VehiculoID = p_VehiculoID;
     ELSE
-        SELECT 'La cita con el ID especificado no fue encontrada.';
+        
+        SELECT 'La cita con el ID especificado no fue encontrada.' AS mensaje;
     END IF;
 END $$
 
 DELIMITER ;
-call eliminarcita('2023-08-20 10:30:00',5);
-select * from citas;
 
+CALL eliminarcita('2023-08-20 10:30:00', 3);
 
++--------+---------------------+------------+------------+------------+
+| CitaID | FechaHora           | VehiculoID | ServicioID | EmpleadoID |
++--------+---------------------+------------+------------+------------+
+|      3 | 2023-06-15 11:00:00 |          3 |          3 |          3 |
+|      4 | 2023-07-01 13:00:00 |          4 |          4 |          4 |
+|      6 | 2023-09-10 14:00:00 |          6 |          6 |          6 |
+|      7 | 2023-10-05 09:00:00 |          7 |          7 |          7 |
+|      8 | 2023-11-15 12:30:00 |          8 |          8 |          8 |
+|      9 | 2024-01-20 11:30:00 |          9 |          9 |          9 |
+|     10 | 2024-03-05 08:00:00 |         10 |         10 |         10 |
++--------+---------------------+------------+------------+------------+
+~~~
  ## 4 consulta una factura 
 
 DELIMITER $$
@@ -548,9 +581,10 @@ DELIMITER ;
 select * from facturacion;
 
 call ConsultarFacturamejorada(5,5);
+
  
 ## 5. Crear un procedimiento almacenado para obtener el historial de reparaciones de un vehículo 
-
+~~~mysql 
 Delimiter $$ 
 
 create procedure historial_reparaciones(
@@ -578,25 +612,29 @@ Delimiter ;
 select * from reparaciones;
 
 call historial_reparaciones(4);
-
++--------------+---------------------+------------+------------+------------+-----------------------+
+| ReparacionID | Fecha               | VehiculoID | EmpleadoID | CostoTotal | Descripcion           |
++--------------+---------------------+------------+------------+------------+-----------------------+
+|            4 | 2023-04-15 00:00:00 |          4 |          4 |        150 | Transmission repair   |
+|           11 | 2024-11-23 00:00:00 |          4 |          4 |        400 | Exhaust system repair |
++--------------+---------------------+------------+------------+------------+-----------------------+
+2 rows in set (0.0010 sec)
+~~~
 ## 6. Crear un procedimiento almacenado para calcular el costo total de reparaciones de un cliente en un período 
-select * from clientes;
-select * from reparaciones;
+
+~~~mysql 
 DELIMITER $$
 
 CREATE PROCEDURE CalcularCostoTotalReparaciones(
-    IN p_ClienteID INT,
-    IN p_FechaInicio DATE,
-    IN p_FechaFin DATE
-)
+    IN p_ClienteID INT
+    )
 BEGIN
     DECLARE costoTotal DOUBLE;
 
     SELECT SUM(r.CostoTotal) INTO costoTotal
     FROM Reparaciones r
     JOIN Vehiculos v ON r.VehiculoID = v.VehiculoID
-    WHERE v.ClienteID = p_ClienteID
-    AND r.Fecha BETWEEN p_FechaInicio AND p_FechaFin;
+    WHERE v.ClienteID = p_ClienteID;
 
     IF costoTotal IS NULL THEN
         SElECT  'costoTotal fue 0';
@@ -606,6 +644,65 @@ END $$
 
 DELIMITER ;
 
-call CalcularCostoTotalReparaciones();
+call CalcularCostoTotalReparaciones(3);
+
++------------------------+
+| CostoTotalReparaciones |
++------------------------+
+|                    100 |
++------------------------+
+1 row in set (0.0008 sec)
+
+~~~
+-- 8. Crear un procedimiento almacenado para insertar una nueva orden de compra
+DELIMITER $$
+
+CREATE PROCEDURE nueva_ordencompra(
+   IN P_Fecha DATETIME,
+   IN P_ProveedorID INT,
+   IN P_EmpleadoID INT,
+   IN P_tOtal DECIMAL(10,2) 
+)
+BEGIN
+    INSERT INTO ordenes_compra (Fecha, ProveedorID, EmpleadoID, total)
+    VALUES (P_Fecha, P_ProveedorID, P_EmpleadoID, P_tOtal);
+    
+    SELECT 'COMPRA CREADA' AS Mensaje;
+END$$
+
+DELIMITER ;
+
+   
+CALL nueva_ordencompra('2024-02-05 00:00:00', 3, 3, 100.50);
+
+
+-- 9. Crear un procedimiento almacenado para actualizar los datos de un cliente
+DELIMITER $$
+
+CREATE PROCEDURE actualizar_cliente(
+    IN p_ClienteID INT,
+    IN p_Nombre VARCHAR(40),
+    IN p_Apellido VARCHAR(60),
+    IN p_Direccion VARCHAR(100),
+    IN p_Telefono VARCHAR(20),
+    IN p_Email VARCHAR(40),
+    IN p_tipo_Identificacion ENUM('CC','TI','PP'),
+    IN p_Identificacion INT
+)
+BEGIN
+    UPDATE clientes
+    SET Nombre = p_Nombre,
+        Apellido = p_Apellido,
+        Direccion = p_Direccion,
+        Telefono = p_Telefono,
+        Email = p_Email,
+        tipo_Identificacion = p_tipo_Identificacion,
+        Identificacion = p_Identificacion
+    WHERE ClienteID = p_ClienteID;
+END$$
+
+DELIMITER ;
+
+call actualizar_cliente(3,'angie','ardila','calle 99','3245454','ardila201630@gmail.com','CC',45488785)
 
  
