@@ -655,28 +655,39 @@ call CalcularCostoTotalReparaciones(3);
 
 ~~~
 -- 8. Crear un procedimiento almacenado para insertar una nueva orden de compra
+
+~~~mysql 
 DELIMITER $$
 
 CREATE PROCEDURE nueva_ordencompra(
+   IN p_OrdenID int,
    IN P_Fecha DATETIME,
    IN P_ProveedorID INT,
    IN P_EmpleadoID INT,
    IN P_tOtal DECIMAL(10,2) 
 )
 BEGIN
-    INSERT INTO ordenes_compra (Fecha, ProveedorID, EmpleadoID, total)
-    VALUES (P_Fecha, P_ProveedorID, P_EmpleadoID, P_tOtal);
+    INSERT INTO ordenes_compra (OrdenID,Fecha, ProveedorID, EmpleadoID, total)
+    VALUES (P_OrdenID,P_Fecha, P_ProveedorID, P_EmpleadoID, P_tOtal);
     
     SELECT 'COMPRA CREADA' AS Mensaje;
 END$$
 
 DELIMITER ;
 
-   
-CALL nueva_ordencompra('2024-02-05 00:00:00', 3, 3, 100.50);
+CALL nueva_ordencompra(1,'2024-02-05 00:00:00', 3, 3, 100.50);
++---------------+
+| Mensaje       |
++---------------+
+| COMPRA CREADA |
++---------------+
+1 row in set (0.0027 sec)
 
+~~~
 
 -- 9. Crear un procedimiento almacenado para actualizar los datos de un cliente
+
+~~~mysql 
 DELIMITER $$
 
 CREATE PROCEDURE actualizar_cliente(
@@ -703,6 +714,20 @@ END$$
 
 DELIMITER ;
 
-call actualizar_cliente(3,'angie','ardila','calle 99','3245454','ardila201630@gmail.com','CC',45488785)
+call actualizar_cliente(3,'angie','ardila','calle 99','3245454','ardila201630@gmail.com','CC',45488785);
 
++-----------+--------+-----------+---------------+----------+-----------------------------+---------------------+----------------+
+| ClienteID | Nombre | Apellido  | Direccion     | Telefono | Email                       | tipo_Identificacion | Identificacion |
++-----------+--------+-----------+---------------+----------+-----------------------------+---------------------+----------------+
+|         3 | angie  | ardila    | calle 99      | 3245454  | ardila201630@gmail.com      | CC                  |       45488785 |
+|         4 | angie  | ardila    | calle 99      | 3245454  | ardila201630@gmail.com      | CC                  |       45488785 |
+|         5 | Luis   | Lopez     | 987 Cedar St  | 555-9876 | luis.lopez@example.com      | PP                  |         123987 |
+|         6 | Maria  | Gonzalez  | 654 Spruce St | 555-6543 | maria.gonzalez@example.com  | CC                  |         654123 |
+|         7 | Pedro  | Hernandez | 321 Maple St  | 555-3210 | pedro.hernandez@example.com | TI                  |         321098 |
+|         8 | Sofia  | Ramirez   | 123 Oak St    | 555-1235 | sofia.ramirez@example.com   | CC                  |         543210 |
+|         9 | Miguel | Torres    | 456 Elm St    | 555-4567 | miguel.torres@example.com   | TI                  |         654321 |
+|        10 | Lucia  | Vargas    | 789 Pine St   | 555-7890 | lucia.vargas@example.com    | CC                  |         987654 |
++-----------+--------+-----------+---------------+----------+-----------------------------+---------------------+----------------+
+8 rows in set (0.0008 sec)
+~~~
  
