@@ -244,4 +244,3 @@ INSERT INTO Citas (CitaID, FechaHora, VehiculoID, ServicioID, EmpleadoID) VALUES
 (8, '2023-11-15 12:30:00', 8, 8, 8),
 (9, '2024-01-20 11:30:00', 9, 9, 9),
 (10, '2024-03-05 08:00:00', 10, 10, 10);
-

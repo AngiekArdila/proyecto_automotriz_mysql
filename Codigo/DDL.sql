@@ -47,7 +47,7 @@ CREATE TABLE Proveedores (
 CREATE TABLE Piezas (
     PiezaID INT PRIMARY KEY,
     Nombre VARCHAR(20),
-    Descripcion VARCHAR(20),
+    Descripcion VARCHAR(50),
     Precio FLOAT,
     ProveedorID INT,
     FOREIGN KEY (ProveedorID) REFERENCES Proveedores(ProveedorID)
@@ -57,7 +57,7 @@ CREATE TABLE Vehiculos (
     Placa VARCHAR(30),
     MarcaID INT,
     Modelo VARCHAR(50),
-    Año DATETIME,
+    Año YEAR,
     ClienteID INT,
     FOREIGN KEY (MarcaID) REFERENCES Marcas(MarcaID),
     FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
