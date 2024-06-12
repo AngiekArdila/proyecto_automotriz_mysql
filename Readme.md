@@ -654,7 +654,7 @@ call CalcularCostoTotalReparaciones(3);
 1 row in set (0.0008 sec)
 
 ~~~
--- 8. Crear un procedimiento almacenado para insertar una nueva orden de compra
+ ## 8. Crear un procedimiento almacenado para insertar una nueva orden de compra
 
 ~~~mysql 
 DELIMITER $$
@@ -685,7 +685,7 @@ CALL nueva_ordencompra(1,'2024-02-05 00:00:00', 3, 3, 100.50);
 
 ~~~
 
--- 9. Crear un procedimiento almacenado para actualizar los datos de un cliente
+ ## 9. Crear un procedimiento almacenado para actualizar los datos de un cliente
 
 ~~~mysql 
 DELIMITER $$
@@ -730,4 +730,41 @@ call actualizar_cliente(3,'angie','ardila','calle 99','3245454','ardila201630@gm
 +-----------+--------+-----------+---------------+----------+-----------------------------+---------------------+----------------+
 8 rows in set (0.0008 sec)
 ~~~
+## 10 Crear un procedimiento almacenado para obtener los servicios más solicitados en un período
+~~~mysql 
+DELIMITER $$
+
+CREATE PROCEDURE ObtenerServiciosMasSolicitados(
+    IN p_fechaInicio DATE,
+    IN p_fechaFin DATE
+)
+BEGIN
+    SELECT s.ServicioID, s.Tipo, s.Descripcion, s.Costo, COUNT(*) AS NumeroSolicitudes
+    FROM Servicios s
+    JOIN Citas c ON s.ServicioID = c.ServicioID
+    WHERE c.FechaHora BETWEEN p_fechaInicio AND p_fechaFin
+    GROUP BY s.ServicioID
+    ORDER BY NumeroSolicitudes DESC;
+END $$
+
+DELIMITER ;
+
+CALL ObtenerServiciosMasSolicitados('2023-06-01', '2024-03-31');
+
++------------+-------------------------+-----------------------------------+--------+-------------------+
+| ServicioID | Tipo                    | Descripcion                       | Costo  | NumeroSolicitudes |
++------------+-------------------------+-----------------------------------+--------+-------------------+
+|         10 | Exhaust System Repair   | Repair of exhaust system          | 249.99 |                 1 |
+|          7 | Engine Repair           | Repair of engine                  | 999.99 |                 1 |
+|          3 | Brake Replacement       | Replacement of brake pads         | 149.99 |                 1 |
+|          9 | Suspension Repair       | Repair of suspension system       | 299.99 |                 1 |
+|          6 | Wheel Alignment         | Alignment of car wheels           |  89.99 |                 1 |
+|          8 | Air Conditioning Repair | Repair of air conditioning system | 199.99 |                 1 |
+|          4 | Battery Replacement     | Replacement of car battery        | 119.99 |                 1 |
++------------+-------------------------+-----------------------------------+--------+-------------------+
+7 rows in set (0.0010 sec)
+
+
+
  
+~~~
